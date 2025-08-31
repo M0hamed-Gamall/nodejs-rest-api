@@ -39,9 +39,16 @@ const updateCourse = async (req, res) => {
     }
 }
 
+const deleteCourse = async (req, res) => {
+    await Course.deleteOne({_id:req.params.id})
+    res.json({stasus: httpStatusText.SUCCESS, data: null})
+}
+
+
 module.exports = {
     getAllCourse,
     getCourse,
     addCourse,
-    updateCourse
+    updateCourse,
+    deleteCourse
 }
