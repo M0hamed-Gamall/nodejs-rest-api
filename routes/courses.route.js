@@ -9,5 +9,6 @@ router.route('/')
 
 router.route('/:id')
     .get( courseController.getCourse)
+    .patch( courseController.updateCourse)
 
 module.exports = router

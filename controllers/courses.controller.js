@@ -29,8 +29,19 @@ const addCourse = async (req, res) => {
     res.status(201).json({status: httpStatusText.SUCCESS, data: {course: newCourse}})
 }
 
+const updateCourse = async (req, res) => {
+    try{
+        const updatedCourse = await Course.updateOne({_id:req.params.id} ,{$set:{ ...req.body}}) 
+        if(!updatedCourse) return res.status(404).json({status: httpStatusText.FAIL, data: null, message: "id not found"})
+        res.status(200).json({status: httpStatusText.SUCCESS, data: {course: updateCourse}})
+    } catch (err){
+        return res.status(400).json({status: httpStatusText.ERROR, message: err.message})
+    }
+}
+
 module.exports = {
     getAllCourse,
     getCourse,
-    addCourse
+    addCourse,
+    updateCourse
 }
