@@ -10,7 +10,9 @@ mongoose.connect(uri).then(()=>{
 })
 
 
-
+const router = require('./routes/courses.route')
+app.use(express.json())
+app.use('/api/courses', router)
 
 
 
