@@ -3,13 +3,16 @@ const httpStatusText = require("../utils/httpStatusText")
 const {validationResult} = require('express-validator')
 
 const getAllCourse = async (req, res) => {
-    const courses = await Course.find()
+    const query = req.query
+    const limit = query.limit || 5
+    const page = query.page || 1
+    const courses = await Course.find({}, {"__v": false}, {limit, skip: (page - 1) * limit})
     res.json({stasus: httpStatusText.SUCCESS, data: {courses}})
 }
 
 const getCourse = async (req, res) => {
     try{
-        const course = await Course.findById(req.params.id)
+        const course = await Course.findById(req.params.id, {"__v": false})
         if(!course){
             return res.status(404).json({status: httpStatusText.FAIL, data: {course: null}})
         }
@@ -33,7 +36,7 @@ const updateCourse = async (req, res) => {
     try{
         const updatedCourse = await Course.updateOne({_id:req.params.id} ,{$set:{ ...req.body}}) 
         if(!updatedCourse) return res.status(404).json({status: httpStatusText.FAIL, data: null, message: "id not found"})
-        res.status(200).json({status: httpStatusText.SUCCESS, data: {course: updateCourse}})
+        res.status(200).json({status: httpStatusText.SUCCESS, data: {course: updatedCourse}})
     } catch (err){
         return res.status(400).json({status: httpStatusText.ERROR, message: err.message})
     }
