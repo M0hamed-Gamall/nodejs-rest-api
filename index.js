@@ -2,6 +2,9 @@ const express = require('express')
 const dotenv = require('dotenv')
 dotenv.config({path: './.env'})
 const httpStatusText = require('./utils/httpStatusText')
+const cors = require('cors')
+const router = require('./routes/courses.route')
+
 const app = express()
 
 const mongoose = require('mongoose')
@@ -10,8 +13,7 @@ mongoose.connect(uri).then(()=>{
     console.log("mongodb connect successfully")
 })
 
-
-const router = require('./routes/courses.route')
+app.use(cors())
 app.use(express.json())
 app.use('/api/courses', router)
 app.use((req, res, next)=> {
