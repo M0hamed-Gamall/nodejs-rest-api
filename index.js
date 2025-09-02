@@ -1,6 +1,7 @@
 const express = require('express')
 const dotenv = require('dotenv')
 dotenv.config({path: './.env'})
+const httpStatusText = require('./utils/httpStatusText')
 const app = express()
 
 const mongoose = require('mongoose')
@@ -13,6 +14,9 @@ mongoose.connect(uri).then(()=>{
 const router = require('./routes/courses.route')
 app.use(express.json())
 app.use('/api/courses', router)
+app.use((req, res, next)=> {
+    res.status(404).json({status: httpStatusText.ERROR, message: 'Not Found' })
+})
 
 
 
