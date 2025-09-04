@@ -3,7 +3,8 @@ const dotenv = require('dotenv')
 dotenv.config({path: './.env'})
 const httpStatusText = require('./utils/httpStatusText')
 const cors = require('cors')
-const router = require('./routes/courses.route')
+const courseRouter = require('./routes/courses.route')
+const userRouter = require('./routes/users.route')
 
 const app = express()
 
@@ -15,7 +16,8 @@ mongoose.connect(uri).then(()=>{
 
 app.use(cors())
 app.use(express.json())
-app.use('/api/courses', router)
+app.use('/api/courses', courseRouter)
+app.use('/api/users', userRouter)
 
 app.use((req, res, next)=> {
     res.status(404).json({status: httpStatusText.ERROR, message: 'Not Found' })
