@@ -1,7 +1,7 @@
 
 const {body} = require('express-validator')
 
-const validationSchema = () =>{ 
+const courseValidation = () => { 
     return [
         body('title')
             .notEmpty()
@@ -11,4 +11,26 @@ const validationSchema = () =>{
             .notEmpty()
     ]
 }
-module.exports = { validationSchema }
+
+const registerValidation = () => {
+    return [
+        body('firstName')
+            .notEmpty()
+            .withMessage('firstName is required'),
+            
+        body('lastName')
+            .notEmpty()
+            .withMessage('lastName is required'),
+            
+        body('email')
+            .isEmail()
+            .withMessage('enter a valid email'),
+            
+        body('password')
+            .isLength(8)
+            .withMessage('password length must be more then 7'),
+            
+    ]
+}
+
+module.exports = { courseValidation, registerValidation }

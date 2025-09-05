@@ -1,11 +1,11 @@
 const express = require('express')
 const courseController = require('../controllers/courses.controller')
-const {validationSchema} = require('../middlewares/validationSchema')
+const {courseValidation} = require('../middlewares/validationSchema')
 const router = express.Router()
 
 router.route('/')
     .get( courseController.getAllCourse)
-    .post(validationSchema(), courseController.addCourse)
+    .post(courseValidation(), courseController.addCourse)
 
 router.route('/:id')
     .get( courseController.getCourse)

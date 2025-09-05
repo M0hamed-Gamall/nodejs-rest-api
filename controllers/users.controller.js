@@ -3,6 +3,7 @@ const httpStatusText = require("../utils/httpStatusText")
 const asyncWrapper = require('../middlewares/asyncWrapper')
 const appError = require('../utils/appError')
 const bcrypt = require('bcryptjs')
+const {validationResult} = require('express-validator')
 
 const getAllUsers = asyncWrapper( async (req, res, next) => {
     const query = req.query
@@ -12,12 +13,18 @@ const getAllUsers = asyncWrapper( async (req, res, next) => {
     res.status(200).json({status: httpStatusText.SUCCESS, data: {users}})
 })
 
-const addUser = asyncWrapper( async (req, res, next) => {
+const register = asyncWrapper( async (req, res, next) => {
+    const errors = validationResult(req)
+    if(!errors.isEmpty()){
+        const error = appError.create(errors.array(), 400, httpStatusText.FAIL)
+        return next(error)
+    }
+    
     const { firstName, lastName, email, password } = req.body
     const oldUser = await User.findOne({email})
     if(oldUser){
         const error = appError.create("the email already exists", 400, httpStatusText.FAIL)
-        next(error)
+        return next(error)
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
@@ -29,5 +36,5 @@ const addUser = asyncWrapper( async (req, res, next) => {
 
 module.exports = {
     getAllUsers,
-    addUser
+    register,
 }
