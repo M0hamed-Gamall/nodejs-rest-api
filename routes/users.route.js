@@ -5,4 +5,7 @@ const router = express.Router()
 router.route('/')
     .get(userController.getAllUsers)
 
+router.route('/register')
+    .post(userController.addUser)
+
 module.exports = router
