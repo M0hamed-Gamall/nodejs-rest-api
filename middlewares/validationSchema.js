@@ -33,4 +33,16 @@ const registerValidation = () => {
     ]
 }
 
-module.exports = { courseValidation, registerValidation }
+const loginValidation = () => {
+    return[
+        body('email')
+            .isEmail()
+            .withMessage('enter a valid email'),
+                
+        body('password')
+            .notEmpty()
+            .withMessage("password is required")
+    ]
+}
+
+module.exports = { courseValidation, registerValidation, loginValidation }

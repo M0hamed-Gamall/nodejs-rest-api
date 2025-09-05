@@ -19,7 +19,7 @@ const register = asyncWrapper( async (req, res, next) => {
         const error = appError.create(errors.array(), 400, httpStatusText.FAIL)
         return next(error)
     }
-    
+
     const { firstName, lastName, email, password } = req.body
     const oldUser = await User.findOne({email})
     if(oldUser){
@@ -34,7 +34,32 @@ const register = asyncWrapper( async (req, res, next) => {
     res.status(201).json({status: httpStatusText.status, data:{user: newUser}})
 })
 
+const login = asyncWrapper( async (req, res, next) => {
+    const errors = validationResult(req)
+    if(!errors.isEmpty()){
+        const error = appError.create(errors.array(), 400, httpStatusText.FAIL)
+        return next(error)
+    }
+
+    const {email, password} = req.body
+    
+    const user = await User.findOne({email})
+    if(!user){
+        const error = appError.create("user not found", 400, httpStatusText.FAIL)
+        return next(error)
+    }
+
+    const matchedPassword = await bcrypt.compare(password, user.password)
+    if(matchedPassword){
+        return res.status(200).json({status: httpStatusText.SUCCESS, data:{user: 'logged in successfully'}})
+    }else{
+        const error = appError.create("something wrong", 400, httpStatusText.FAIL)
+        return next(error)
+    }
+})
+
 module.exports = {
     getAllUsers,
     register,
+    login
 }
