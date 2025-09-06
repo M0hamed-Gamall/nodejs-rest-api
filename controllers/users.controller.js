@@ -4,6 +4,7 @@ const asyncWrapper = require('../middlewares/asyncWrapper')
 const appError = require('../utils/appError')
 const bcrypt = require('bcryptjs')
 const {validationResult} = require('express-validator')
+const generateJWT = require('../utils/generateJWT')
 
 const getAllUsers = asyncWrapper( async (req, res, next) => {
     const query = req.query
@@ -30,6 +31,9 @@ const register = asyncWrapper( async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(password, 10)
 
     const newUser = new User({firstName, lastName, email, password: hashedPassword}) 
+
+    const token = await generateJWT({email: newUser.email, id: newUser._id})
+    newUser.token = token
     await newUser.save()
     res.status(201).json({status: httpStatusText.status, data:{user: newUser}})
 })
@@ -51,7 +55,8 @@ const login = asyncWrapper( async (req, res, next) => {
 
     const matchedPassword = await bcrypt.compare(password, user.password)
     if(matchedPassword){
-        return res.status(200).json({status: httpStatusText.SUCCESS, data:{user: 'logged in successfully'}})
+        const token = await generateJWT({email: user.email, id: user._id})
+        return res.status(200).json({status: httpStatusText.SUCCESS, data: {token}})
     }else{
         const error = appError.create("something wrong", 400, httpStatusText.FAIL)
         return next(error)
