@@ -21,7 +21,7 @@ const register = asyncWrapper( async (req, res, next) => {
         return next(error)
     }
 
-    const { firstName, lastName, email, password } = req.body
+    const { firstName, lastName, email, password, role } = req.body
     const oldUser = await User.findOne({email})
     if(oldUser){
         const error = appError.create("the email already exists", 400, httpStatusText.FAIL)
@@ -30,9 +30,9 @@ const register = asyncWrapper( async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    const newUser = new User({firstName, lastName, email, password: hashedPassword}) 
+    const newUser = new User({firstName, lastName, email, password: hashedPassword, role}) 
 
-    const token = await generateJWT({email: newUser.email, id: newUser._id})
+    const token = await generateJWT({email: newUser.email, id: newUser._id, role: newUser.role})
     newUser.token = token
     await newUser.save()
     res.status(201).json({status: httpStatusText.status, data:{user: newUser}})
@@ -55,7 +55,7 @@ const login = asyncWrapper( async (req, res, next) => {
 
     const matchedPassword = await bcrypt.compare(password, user.password)
     if(matchedPassword){
-        const token = await generateJWT({email: user.email, id: user._id})
+        const token = await generateJWT({email: user.email, id: user._id, role: user.role})
         return res.status(200).json({status: httpStatusText.SUCCESS, data: {token}})
     }else{
         const error = appError.create("something wrong", 400, httpStatusText.FAIL)

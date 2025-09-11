@@ -10,8 +10,8 @@ const verifyToken = (req, res, next) => {
     }
     const token = authHeader.split(' ')[1]
     try{
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET_key)
-        console.log(decodedToken)
+        const currentUser = jwt.verify(token, process.env.JWT_SECRET_key)
+        req.currentUser = currentUser
         next()
     }catch(err){
         const error = appError.create(err, 401, httpStatusText.ERROR)
